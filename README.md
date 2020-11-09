@@ -3,7 +3,7 @@
 
 -I've set the default game directory for you if you have it installed with steam on your C drive, but there is an option to choose an alternate directory. The program will check to make sure you chose the right place!
 
-Directions:
+## Directions:
 1. (Optional) Choose where the game is installed if it is not on your C drive.
 2. Choose the folder where you would like images to be written to.
 3. Once the game folder and backup locations have been selected: 
