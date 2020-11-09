@@ -24,7 +24,7 @@ Public Class frmMain
 
             End If
         Else
-            lstOutput.Items.Add("You did not select a valid game directory. Use 'browse local files' in steam to find the" +
+            lstOutput.Items.Add("You did not select a valid game folder. Use 'browse local files' in steam to find the" +
                                 "correct location.")
         End If
     End Sub
@@ -38,7 +38,7 @@ Public Class frmMain
         If checkValidPath(strBackupDirectory) = True Then
             txtBackupFolder.Text = strBackupDirectory
         Else
-            lstOutput.Items.Add("You did not select a valid backup location. Please try again.")
+            lstOutput.Items.Add("You did not select a valid backup folder. Please try again.")
         End If
     End Sub
 
@@ -48,6 +48,9 @@ Public Class frmMain
         txtGameInstallFolder.Text = DEFAULT_GAME_DIRECTORY
         txtBackupFolder.Text = ""
         lstOutput.Items.Clear()
+        lstOutput.Items.Add("Welcome to the Phasmophobia Photo Backup Utility.")
+        lstOutput.Items.Add("Please choose backup and game (if different from default) folders to continue.")
+        lstOutput.Items.Add("")
         btnBeginWatching.Visible = False
         btnStopWatching.Visible = False
         btnBackupPhotos.Visible = False
@@ -133,6 +136,9 @@ Public Class frmMain
     ' into strGameDirectory.
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
         strGameDirectory = txtGameInstallFolder.Text
+        lstOutput.Items.Add("Welcome to the Phasmophobia Photo Backup Utility.")
+        lstOutput.Items.Add("Please choose backup and game (if different from default) folders to continue.")
+        lstOutput.Items.Add("")
     End Sub
 
     Private Sub btnBeginWatching_Click(sender As Object, e As EventArgs) Handles btnBeginWatching.Click
@@ -177,6 +183,7 @@ Public Class frmMain
         ' Disable the Filesystem watcher to raise events
         FileSystemWatcher1.EnableRaisingEvents = False
         lstOutput.Items.Add("Stopped watching game folder for file changes...")
+        lstOutput.Items.Add("")
         SwapMonitoringButtons()
     End Sub
 
