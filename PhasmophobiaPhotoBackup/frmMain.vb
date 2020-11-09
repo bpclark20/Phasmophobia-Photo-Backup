@@ -48,6 +48,9 @@ Public Class frmMain
         txtGameInstallFolder.Text = DEFAULT_GAME_DIRECTORY
         txtBackupFolder.Text = ""
         lstOutput.Items.Clear()
+        lstOutput.Items.Add("Welcome to the Phasmophobia Photo Backup Utility.")
+        lstOutput.Items.Add("Please choose backup and game (if different from default) locations to continue.")
+        lstOutput.Items.Add("")
         btnBeginWatching.Visible = False
         btnStopWatching.Visible = False
         btnBackupPhotos.Visible = False
@@ -133,6 +136,9 @@ Public Class frmMain
     ' into strGameDirectory.
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
         strGameDirectory = txtGameInstallFolder.Text
+        lstOutput.Items.Add("Welcome to the Phasmophobia Photo Backup Utility.")
+        lstOutput.Items.Add("Please choose backup and game (if different from default) locations to continue.")
+        lstOutput.Items.Add("")
     End Sub
 
     Private Sub btnBeginWatching_Click(sender As Object, e As EventArgs) Handles btnBeginWatching.Click
