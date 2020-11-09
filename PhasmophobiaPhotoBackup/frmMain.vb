@@ -11,14 +11,17 @@ Public Class frmMain
 
     ' Fires when the user clicks on the Game Folder Browse Button, if the selected directory is where
     Private Sub btnGameFolderBrowse_Click(sender As Object, e As EventArgs) Handles btnGameFolderBrowse.Click
+        HideControlButtons()
         FolderBrowserDialog1.ShowDialog()
         strGameDirectory = FolderBrowserDialog1.SelectedPath()
         If checkValidPath(strGameDirectory) = True Then
+            txtGameInstallFolder.Text = ""
             If checkGameDirectory() = True Then
                 txtGameInstallFolder.Text = strGameDirectory
             Else
                 lstOutput.Items.Add(strGameDirectory + " is not where " + GAME_EXECUTABLE +
                                     " is found.")
+
             End If
         Else
             lstOutput.Items.Add("You did not select a valid game directory. Use 'browse local files' in steam to find the" +
@@ -28,6 +31,7 @@ Public Class frmMain
 
     ' Fires when the user clicks on the Backup Folder Browse Button
     Private Sub btnBackupFolderBrowse_Click(sender As Object, e As EventArgs) Handles btnBackupFolderBrowse.Click
+        HideControlButtons()
         FolderBrowserDialog1.ShowDialog()
         strBackupDirectory = FolderBrowserDialog1.SelectedPath()
         txtBackupFolder.Text = strBackupDirectory
@@ -191,5 +195,11 @@ Public Class frmMain
                                             Path.GetFileName(strSourceFile))
             strLastCopiedFile = strSourceFile
         End If
+    End Sub
+
+    Private Sub HideControlButtons()
+        btnBackupPhotos.Visible = False
+        btnBeginWatching.Visible = False
+        btnStopWatching.Visible = False
     End Sub
 End Class
