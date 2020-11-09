@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class frmMain
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class frmMain
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.lblGameDirectory = New System.Windows.Forms.Label()
         Me.lblBackupLocation = New System.Windows.Forms.Label()
@@ -30,7 +30,7 @@ Partial Class frmMain
         Me.btnBackupFolderBrowse = New System.Windows.Forms.Button()
         Me.btnBackupPhotos = New System.Windows.Forms.Button()
         Me.btnReset = New System.Windows.Forms.Button()
-        Me.ListBox1 = New System.Windows.Forms.ListBox()
+        Me.lstOutput = New System.Windows.Forms.ListBox()
         Me.FolderBrowserDialog1 = New System.Windows.Forms.FolderBrowserDialog()
         Me.SuspendLayout()
         '
@@ -56,6 +56,7 @@ Partial Class frmMain
         '
         'txtGameInstallFolder
         '
+        Me.txtGameInstallFolder.Enabled = False
         Me.txtGameInstallFolder.Font = New System.Drawing.Font("Segoe UI", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtGameInstallFolder.Location = New System.Drawing.Point(201, 13)
         Me.txtGameInstallFolder.Name = "txtGameInstallFolder"
@@ -66,6 +67,7 @@ Partial Class frmMain
         '
         'txtBackupFolder
         '
+        Me.txtBackupFolder.Enabled = False
         Me.txtBackupFolder.Font = New System.Drawing.Font("Segoe UI", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtBackupFolder.Location = New System.Drawing.Point(201, 53)
         Me.txtBackupFolder.Name = "txtBackupFolder"
@@ -102,6 +104,7 @@ Partial Class frmMain
         Me.btnBackupPhotos.TabIndex = 6
         Me.btnBackupPhotos.Text = "Copy Photos"
         Me.btnBackupPhotos.UseVisualStyleBackColor = True
+        Me.btnBackupPhotos.Visible = False
         '
         'btnReset
         '
@@ -113,22 +116,22 @@ Partial Class frmMain
         Me.btnReset.Text = "Reset"
         Me.btnReset.UseVisualStyleBackColor = True
         '
-        'ListBox1
+        'lstOutput
         '
-        Me.ListBox1.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ListBox1.FormattingEnabled = True
-        Me.ListBox1.ItemHeight = 17
-        Me.ListBox1.Location = New System.Drawing.Point(201, 88)
-        Me.ListBox1.Name = "ListBox1"
-        Me.ListBox1.Size = New System.Drawing.Size(420, 327)
-        Me.ListBox1.TabIndex = 8
+        Me.lstOutput.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lstOutput.FormattingEnabled = True
+        Me.lstOutput.ItemHeight = 17
+        Me.lstOutput.Location = New System.Drawing.Point(18, 88)
+        Me.lstOutput.Name = "lstOutput"
+        Me.lstOutput.Size = New System.Drawing.Size(823, 327)
+        Me.lstOutput.TabIndex = 8
         '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(853, 427)
-        Me.Controls.Add(Me.ListBox1)
+        Me.Controls.Add(Me.lstOutput)
         Me.Controls.Add(Me.btnReset)
         Me.Controls.Add(Me.btnBackupPhotos)
         Me.Controls.Add(Me.btnBackupFolderBrowse)
@@ -152,6 +155,6 @@ Partial Class frmMain
     Friend WithEvents btnBackupFolderBrowse As Button
     Friend WithEvents btnBackupPhotos As Button
     Friend WithEvents btnReset As Button
-    Friend WithEvents ListBox1 As ListBox
+    Friend WithEvents lstOutput As ListBox
     Friend WithEvents FolderBrowserDialog1 As FolderBrowserDialog
 End Class
