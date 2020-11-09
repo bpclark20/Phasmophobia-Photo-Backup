@@ -183,6 +183,7 @@ Public Class frmMain
         ' Disable the Filesystem watcher to raise events
         FileSystemWatcher1.EnableRaisingEvents = False
         lstOutput.Items.Add("Stopped watching game folder for file changes...")
+        lstOutput.Items.Add("")
         SwapMonitoringButtons()
     End Sub
 
