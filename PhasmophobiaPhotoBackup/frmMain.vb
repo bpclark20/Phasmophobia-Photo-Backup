@@ -4,8 +4,10 @@ Public Class frmMain
     ' Game executable name
     Public Const GAME_EXECUTABLE As String = "Phasmophobia.exe"
     Public Const IMAGE_EXTENSION As String = "png"
+    Public Const DEFAULT_GAME_DIRECTORY As String = "C:\Program Files (x86)\Steam\steamapps\common\Phasmophobia"
     Dim strGameDirectory As String
     Dim strBackupDirectory As String
+    Dim strLastCopiedFile As String
 
     ' Fires when the user clicks on the Game Folder Browse Button, if the selected directory is where
     Private Sub btnGameFolderBrowse_Click(sender As Object, e As EventArgs) Handles btnGameFolderBrowse.Click
@@ -39,9 +41,12 @@ Public Class frmMain
     ' Fires when the user clicks on the Reset button, resets the game directory, backup directory
     ' and output window.
     Private Sub btnReset_Click(sender As Object, e As EventArgs) Handles btnReset.Click
-        txtGameInstallFolder.Text = ""
+        txtGameInstallFolder.Text = DEFAULT_GAME_DIRECTORY
         txtBackupFolder.Text = ""
         lstOutput.Items.Clear()
+        btnBeginWatching.Visible = False
+        btnStopWatching.Visible = False
+        btnBackupPhotos.Visible = False
     End Sub
 
     ' Fires when the user clicks on the Backup Photos button. Searches the game install directory
@@ -52,9 +57,11 @@ Public Class frmMain
 
         For Each file In My.Computer.FileSystem.GetFiles(strGameDirectory)
             If Path.GetExtension(file).ToLower.Contains(IMAGE_EXTENSION) Then
-                My.Computer.FileSystem.CopyFile(file, strBackupDirectory + "\" +
-                                                DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
-                                                Path.GetFileName(file))
+                'My.Computer.FileSystem.CopyFile(file, strBackupDirectory + "\" +
+                '                                DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
+                '                                Path.GetFileName(file))
+
+                CopyFiles(file, strBackupDirectory)
                 lstOutput.Items.Add("Copying file: " + strBackupDirectory + "\" +
                                                 DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
                                                 Path.GetFileName(file))
@@ -93,6 +100,7 @@ Public Class frmMain
     Private Sub txtGameInstallFolder_TextChanged(sender As Object, e As EventArgs) Handles txtGameInstallFolder.TextChanged
         If checkForReadyState() = True Then
             btnBackupPhotos.Visible = True
+            btnBeginWatching.Visible = True
         End If
     End Sub
 
@@ -102,6 +110,7 @@ Public Class frmMain
     Private Sub txtBackupFolder_TextChanged(sender As Object, e As EventArgs) Handles txtBackupFolder.TextChanged
         If checkForReadyState() = True Then
             btnBackupPhotos.Visible = True
+            btnBeginWatching.Visible = True
         End If
     End Sub
 
@@ -120,5 +129,67 @@ Public Class frmMain
     ' into strGameDirectory.
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
         strGameDirectory = txtGameInstallFolder.Text
+    End Sub
+
+    Private Sub btnBeginWatching_Click(sender As Object, e As EventArgs) Handles btnBeginWatching.Click
+        ' Watch the game directory for file changes
+        FileSystemWatcher1.Path = strGameDirectory
+
+        ' Watch for creation and modify time changes
+        FileSystemWatcher1.NotifyFilter = (NotifyFilters.LastWrite)
+
+        ' Only watch for png files
+        FileSystemWatcher1.Filter = "*." + IMAGE_EXTENSION
+
+        ' Enable the Filesystem watcher to raise events
+        FileSystemWatcher1.EnableRaisingEvents = True
+
+        lstOutput.Items.Add("Started watching game folder for file changes...")
+
+        SwapMonitoringButtons()
+    End Sub
+
+    Private Sub FileSystemWatcher1_Changed(sender As Object, e As FileSystemEventArgs) Handles FileSystemWatcher1.Changed
+        'For Each file In My.Computer.FileSystem.GetFiles(strGameDirectory)
+        '    If Path.GetExtension(file).ToLower.Contains(IMAGE_EXTENSION) Then
+        '        My.Computer.FileSystem.CopyFile(file, strBackupDirectory + "\" +
+        '                                        DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
+        '                                        Path.GetFileName(file))
+        '        lstOutput.Items.Add("Copying file: " + strBackupDirectory + "\" +
+        '                                        DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
+        '                                        Path.GetFileName(file))
+        '    End If
+        'Next
+        If Not strLastCopiedFile = e.FullPath Then
+            CopyFiles(e.FullPath, strBackupDirectory)
+            lstOutput.Items.Add("Copying file: " + strBackupDirectory + "\" +
+                                                    DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
+                                                    Path.GetFileName(e.FullPath))
+        End If
+
+    End Sub
+
+    Private Sub btnStopWatching_Click(sender As Object, e As EventArgs) Handles btnStopWatching.Click
+        ' Disable the Filesystem watcher to raise events
+        FileSystemWatcher1.EnableRaisingEvents = False
+        lstOutput.Items.Add("Stopped watching game folder for file changes...")
+        SwapMonitoringButtons()
+    End Sub
+
+    Private Sub SwapMonitoringButtons()
+        btnBeginWatching.Visible = Not btnBeginWatching.Visible
+        btnStopWatching.Visible = Not btnStopWatching.Visible
+    End Sub
+
+    Private Sub CopyFiles(ByVal strSourceFile As String, ByVal strDestinationPath As String)
+        If (Not File.Exists(strDestinationPath + "\" +
+                                                DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
+                                                Path.GetFileName(strSourceFile))) Then
+
+            My.Computer.FileSystem.CopyFile(strSourceFile, strDestinationPath + "\" +
+                                            DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
+                                            Path.GetFileName(strSourceFile))
+            strLastCopiedFile = strSourceFile
+        End If
     End Sub
 End Class
