@@ -24,7 +24,7 @@ Public Class frmMain
 
             End If
         Else
-            lstOutput.Items.Add("You did not select a valid game directory. Use 'browse local files' in steam to find the" +
+            lstOutput.Items.Add("You did not select a valid game folder. Use 'browse local files' in steam to find the" +
                                 "correct location.")
         End If
     End Sub
@@ -38,7 +38,7 @@ Public Class frmMain
         If checkValidPath(strBackupDirectory) = True Then
             txtBackupFolder.Text = strBackupDirectory
         Else
-            lstOutput.Items.Add("You did not select a valid backup location. Please try again.")
+            lstOutput.Items.Add("You did not select a valid backup folder. Please try again.")
         End If
     End Sub
 
