@@ -69,9 +69,9 @@ Public Class frmMain
                 '                                Path.GetFileName(file))
 
                 CopyFiles(file, strBackupDirectory)
-                lstOutput.Items.Add("Copying file: " + strBackupDirectory + "\" +
-                                                DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
-                                                Path.GetFileName(file))
+                'lstOutput.Items.Add("Copying file: " + strBackupDirectory + "\" +
+                '                                DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
+                '                                Path.GetFileName(file))
             End If
         Next
     End Sub
@@ -172,9 +172,9 @@ Public Class frmMain
         'Next
         If Not strLastCopiedFile = e.FullPath Then
             CopyFiles(e.FullPath, strBackupDirectory)
-            lstOutput.Items.Add("Copying file: " + strBackupDirectory + "\" +
-                                                    DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
-                                                    Path.GetFileName(e.FullPath))
+            'lstOutput.Items.Add("Copying file: " + strBackupDirectory + "\" +
+            '                                        DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
+            '                                        Path.GetFileName(e.FullPath))
         End If
 
     End Sub
@@ -196,11 +196,22 @@ Public Class frmMain
         If (Not File.Exists(strDestinationPath + "\" +
                                                 DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
                                                 Path.GetFileName(strSourceFile))) Then
-
-            My.Computer.FileSystem.CopyFile(strSourceFile, strDestinationPath + "\" +
+            Try
+                My.Computer.FileSystem.CopyFile(strSourceFile, strDestinationPath + "\" +
                                             DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
                                             Path.GetFileName(strSourceFile))
-            strLastCopiedFile = strSourceFile
+                strLastCopiedFile = strSourceFile
+                lstOutput.Items.Add("Copying file: " + strDestinationPath + "\" +
+                                                        DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
+                                                        Path.GetFileName(strSourceFile))
+            Catch ex As FileLoadException
+                lstOutput.Items.Add("Error while copying " + strSourceFile + ". Unable to open file.")
+            Catch ex As FileNotFoundException
+                lstOutput.Items.Add("Error copying " + strSourceFile + ". File not found.")
+            Catch ex As Exception
+                lstOutput.Items.Add("Error copying " + strSourceFile)
+                lstOutput.Items.Add("Error: " + ex.Message)
+            End Try
         End If
     End Sub
 
