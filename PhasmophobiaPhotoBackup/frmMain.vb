@@ -18,6 +18,7 @@ Public Class frmMain
             txtGameInstallFolder.Text = ""
             If checkGameDirectory() = True Then
                 txtGameInstallFolder.Text = strGameDirectory
+                My.Settings.GamePath = strGameDirectory
             Else
                 lstOutput.Items.Add(strGameDirectory + " is not where " + GAME_EXECUTABLE +
                                     " is found.")
@@ -37,6 +38,7 @@ Public Class frmMain
         txtBackupFolder.Text = strBackupDirectory
         If checkValidPath(strBackupDirectory) = True Then
             txtBackupFolder.Text = strBackupDirectory
+            My.Settings.BackupPath = strBackupDirectory
         Else
             lstOutput.Items.Add("You did not select a valid backup folder. Please try again.")
         End If
@@ -135,7 +137,11 @@ Public Class frmMain
     ' This sub is called on form load, it loads the default install folder of the game
     ' into strGameDirectory.
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
-        strGameDirectory = txtGameInstallFolder.Text
+        'strGameDirectory = txtGameInstallFolder.Text
+        strGameDirectory = My.Settings.GamePath
+        strBackupDirectory = My.Settings.BackupPath
+        txtGameInstallFolder.Text = My.Settings.GamePath
+        txtBackupFolder.Text = My.Settings.BackupPath
         lstOutput.Items.Add("Welcome to the Phasmophobia Photo Backup Utility.")
         lstOutput.Items.Add("Please choose backup and game (if different from default) folders to continue.")
         lstOutput.Items.Add("")
