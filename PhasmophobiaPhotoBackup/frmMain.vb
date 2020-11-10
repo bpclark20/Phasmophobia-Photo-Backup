@@ -3,25 +3,31 @@
 Public Class frmMain
     ' Game executable name
     Public Const GAME_EXECUTABLE As String = "Phasmophobia.exe"
+    ' Photo extension we are looking for
     Public Const IMAGE_EXTENSION As String = "png"
+    ' Default installation location for the game
     Public Const DEFAULT_GAME_DIRECTORY As String = "C:\Program Files (x86)\Steam\steamapps\common\Phasmophobia"
     Dim strGameDirectory As String
     Dim strBackupDirectory As String
     Dim strLastCopiedFile As String
 
-    ' Fires when the user clicks on the Game Folder Browse Button, if the selected directory is where
+    ' Fires when the user clicks on the Game Folder Browse Button.
     Private Sub btnGameFolderBrowse_Click(sender As Object, e As EventArgs) Handles btnGameFolderBrowse.Click
+        ' Once the browse control is shown, the application control buttons need to be hidden.
         HideControlButtons()
         FolderBrowserDialog1.ShowDialog()
         strGameDirectory = FolderBrowserDialog1.SelectedPath()
+
         If checkValidPath(strGameDirectory) = True Then
+            ' Now that a new folder has been chosen, reset the textbox
             txtGameInstallFolder.Text = ""
             If checkGameDirectory() = True Then
                 txtGameInstallFolder.Text = strGameDirectory
+                ' Update application settings to this new path
+                My.Settings.GamePath = strGameDirectory
             Else
                 lstOutput.Items.Add(strGameDirectory + " is not where " + GAME_EXECUTABLE +
                                     " is found.")
-
             End If
         Else
             lstOutput.Items.Add("You did not select a valid game folder. Use 'browse local files' in steam to find the" +
@@ -31,12 +37,16 @@ Public Class frmMain
 
     ' Fires when the user clicks on the Backup Folder Browse Button
     Private Sub btnBackupFolderBrowse_Click(sender As Object, e As EventArgs) Handles btnBackupFolderBrowse.Click
+        ' Once the browse control is shown, the application control buttons need to be hidden.
         HideControlButtons()
         FolderBrowserDialog1.ShowDialog()
         strBackupDirectory = FolderBrowserDialog1.SelectedPath()
         txtBackupFolder.Text = strBackupDirectory
+
         If checkValidPath(strBackupDirectory) = True Then
             txtBackupFolder.Text = strBackupDirectory
+            ' Update application settings to this new path
+            My.Settings.BackupPath = strBackupDirectory
         Else
             lstOutput.Items.Add("You did not select a valid backup folder. Please try again.")
         End If
@@ -64,14 +74,7 @@ Public Class frmMain
 
         For Each file In My.Computer.FileSystem.GetFiles(strGameDirectory)
             If Path.GetExtension(file).ToLower.Contains(IMAGE_EXTENSION) Then
-                'My.Computer.FileSystem.CopyFile(file, strBackupDirectory + "\" +
-                '                                DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
-                '                                Path.GetFileName(file))
-
                 CopyFiles(file, strBackupDirectory)
-                'lstOutput.Items.Add("Copying file: " + strBackupDirectory + "\" +
-                '                                DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
-                '                                Path.GetFileName(file))
             End If
         Next
     End Sub
@@ -132,15 +135,21 @@ Public Class frmMain
         End If
     End Function
 
-    ' This sub is called on form load, it loads the default install folder of the game
-    ' into strGameDirectory.
+    ' This sub is called on form load, it loads application settings and prints
+    ' a welcome message to the user
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
-        strGameDirectory = txtGameInstallFolder.Text
+        strGameDirectory = My.Settings.GamePath
+        strBackupDirectory = My.Settings.BackupPath
+        txtGameInstallFolder.Text = My.Settings.GamePath
+        txtBackupFolder.Text = My.Settings.BackupPath
         lstOutput.Items.Add("Welcome to the Phasmophobia Photo Backup Utility.")
         lstOutput.Items.Add("Please choose backup and game (if different from default) folders to continue.")
         lstOutput.Items.Add("")
     End Sub
 
+    ' This sub is called when the user clicks on the "Start" button.
+    ' It fires up a FileSystemWatcher on the game directory and specifies
+    ' what type of files to look for
     Private Sub btnBeginWatching_Click(sender As Object, e As EventArgs) Handles btnBeginWatching.Click
         ' Watch the game directory for file changes
         FileSystemWatcher1.Path = strGameDirectory
@@ -156,29 +165,23 @@ Public Class frmMain
 
         lstOutput.Items.Add("Started watching game folder for file changes...")
 
+        ' Hide the Start button and show the Stop button.
         SwapMonitoringButtons()
     End Sub
 
+    ' This sub fires whenever FileSystemWatcher1 detects a change in the game folder
+    ' to png files.
     Private Sub FileSystemWatcher1_Changed(sender As Object, e As FileSystemEventArgs) Handles FileSystemWatcher1.Changed
-        'For Each file In My.Computer.FileSystem.GetFiles(strGameDirectory)
-        '    If Path.GetExtension(file).ToLower.Contains(IMAGE_EXTENSION) Then
-        '        My.Computer.FileSystem.CopyFile(file, strBackupDirectory + "\" +
-        '                                        DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
-        '                                        Path.GetFileName(file))
-        '        lstOutput.Items.Add("Copying file: " + strBackupDirectory + "\" +
-        '                                        DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
-        '                                        Path.GetFileName(file))
-        '    End If
-        'Next
+        ' If the file is not EXACTLY the same as the previous one
+        ' This prevents duplicate events from firing for the same file
         If Not strLastCopiedFile = e.FullPath Then
             CopyFiles(e.FullPath, strBackupDirectory)
-            'lstOutput.Items.Add("Copying file: " + strBackupDirectory + "\" +
-            '                                        DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
-            '                                        Path.GetFileName(e.FullPath))
         End If
 
     End Sub
 
+    ' This sub fires when the user clicks on the "Stop" button. It disables the FileSystemWatcher from 
+    ' raising events and swaps the monitoring buttons around so it can be started again.
     Private Sub btnStopWatching_Click(sender As Object, e As EventArgs) Handles btnStopWatching.Click
         ' Disable the Filesystem watcher to raise events
         FileSystemWatcher1.EnableRaisingEvents = False
@@ -187,11 +190,16 @@ Public Class frmMain
         SwapMonitoringButtons()
     End Sub
 
+    ' This sub is called to swap around the visibility status of the 
+    ' automated monitoring buttons.
     Private Sub SwapMonitoringButtons()
         btnBeginWatching.Visible = Not btnBeginWatching.Visible
         btnStopWatching.Visible = Not btnStopWatching.Visible
     End Sub
 
+    ' This sub is called whenever a file needs to be copied. If the file doesn't already 
+    ' exist in the destination path, the sub tries to copy the file. If unsuccessful,
+    ' a message is printed to lstOutput, and the application resumes.
     Private Sub CopyFiles(ByVal strSourceFile As String, ByVal strDestinationPath As String)
         If (Not File.Exists(strDestinationPath + "\" +
                                                 DateTime.Now.ToString("M-d-yy-HH-mm-ss") + " " +
@@ -215,6 +223,8 @@ Public Class frmMain
         End If
     End Sub
 
+    ' This sub is called whenever application control buttons (Backup Photos, Start, Stop)
+    ' All need to be hidden, i.e. when the application is not in a ready state.
     Private Sub HideControlButtons()
         btnBackupPhotos.Visible = False
         btnBeginWatching.Visible = False
